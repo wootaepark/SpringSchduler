@@ -5,8 +5,9 @@ CREATE TABLE `Schedule` (
                             `password`	varchar(100)	NULL,
                             `title`	varchar(100)	NOT NULL,
                             `content`	varchar(1000)	NULL,
-                            `created_at`	datetime	NOT NULL	DEFAULT now()	COMMENT '게시글 최초 작성일',
-                            `updated_at`	datetime	NULL	DEFAULT now() COMMENT '게시글 최근 수정일'
+                            `scheduledDate` date      NOT NULL    COMMENT '일정 날짜',
+                            `createdAt`	datetime	NOT NULL	DEFAULT now()	COMMENT '게시글 최초 작성일',
+                            `updatedAt`	datetime	NULL	DEFAULT now() COMMENT '게시글 최근 수정일'
 
 
 );

@@ -1,4 +1,4 @@
-package templates;
+package com.sparta.springscheduler.controller;
 
 
 import com.sparta.springscheduler.dto.ScheduleDeleteRequestDto;

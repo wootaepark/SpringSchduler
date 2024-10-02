@@ -1,6 +1,7 @@
 package com.sparta.springscheduler.repository;
 
 import com.sparta.springscheduler.dto.ScheduleResponseDto;
+import com.sparta.springscheduler.dto.ScheduleUpdateRequestDto;
 import com.sparta.springscheduler.entity.Schedule;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -61,29 +62,6 @@ public class ScheduleRepository {
     }
 
 
-    private Schedule findById(Integer id) {
-        // DB 조회
-        String sql = "SELECT * FROM schedule WHERE id = ?";
-        return jdbcTemplate.query(sql, resultSet -> {
-            if (resultSet.next()) {
-                Schedule schedule = new Schedule();
-                schedule.setId(resultSet.getInt("id"));
-                schedule.setUsername(resultSet.getString("username"));
-                schedule.setEmail(resultSet.getString("email"));
-                schedule.setScheduledDate(resultSet.getDate("scheduledDate").toLocalDate());
-                schedule.setTitle(resultSet.getString("title"));
-                schedule.setContent(resultSet.getString("content"));
-                schedule.setCreatedAt(resultSet.getTimestamp("createdAt").toLocalDateTime());
-                schedule.setUpdatedAt(resultSet.getTimestamp("updatedAt").toLocalDateTime());
-                return schedule;
-            }
-            else{
-                return null;
-            }
-        },id);
-    }
-
-
     public List<ScheduleResponseDto> findAll(LocalDate updateDate, String username) {
         // 기본 SQL 쿼리
         String sql = "SELECT * FROM schedule";
@@ -122,4 +100,41 @@ public class ScheduleRepository {
             }
         });
     }
+
+
+    public void update(Integer id, ScheduleUpdateRequestDto requestDto) {
+        String sql = "UPDATE schedule SET username = ?, title = ?, content= ?, scheduledDate=?,updatedAt = ? WHERE id = ?";
+        jdbcTemplate.update(sql, requestDto.getUsername(), requestDto.getTitle(), requestDto.getContent(),
+                requestDto.getScheduledDate(), requestDto.getUpdatedAt(), id);
+    }
+
+    public void delete(Integer id) {
+        // memo 삭제
+        String sql = "DELETE FROM schedule WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public Schedule findById(Integer id) {
+        // DB 조회
+        String sql = "SELECT * FROM schedule WHERE id = ?";
+        return jdbcTemplate.query(sql, resultSet -> {
+            if (resultSet.next()) {
+                Schedule schedule = new Schedule();
+                schedule.setId(resultSet.getInt("id"));
+                schedule.setUsername(resultSet.getString("username"));
+                schedule.setEmail(resultSet.getString("email"));
+                schedule.setScheduledDate(resultSet.getDate("scheduledDate").toLocalDate());
+                schedule.setTitle(resultSet.getString("title"));
+                schedule.setContent(resultSet.getString("content"));
+                schedule.setPassword(resultSet.getString("password"));
+                schedule.setCreatedAt(resultSet.getTimestamp("createdAt").toLocalDateTime());
+                schedule.setUpdatedAt(resultSet.getTimestamp("updatedAt").toLocalDateTime());
+                return schedule;
+            }
+            else{
+                return null;
+            }
+        },id);
+    }
+
 }

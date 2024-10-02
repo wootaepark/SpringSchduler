@@ -1,0 +1,150 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.schedule-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+.schedule-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.schedule-card:hover {
+    transform: translateY(-10px);
+}
+
+.schedule-header {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
+.schedule-body {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.schedule-footer {
+    font-size: 0.9rem;
+    color: gray;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin-top: 10px;
+}
+
+form input, form textarea {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-buttons button {
+    padding: 8px 16px;
+}
+
+.form-buttons button:hover {
+    background-color: #344a91;
+}
+#calendarButton {
+    display: inline-block; /* 버튼처럼 보이게 */
+    background-color: #ff69b4; /* 분홍색 배경 */
+    color: white; /* 글씨 색상 */
+    padding: 15px 30px; /* 패딩으로 크기 조절 */
+    border: none; /* 테두리 제거 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    font-size: 1.5rem; /* 글자 크기 조절 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    text-decoration: none; /* 밑줄 제거 */
+    margin: 20px 0; /* 위아래 여백 */
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    margin-top: 20px; /* 버튼과 위 요소 간의 여백 */
+}
+
+
+#calendarButton:hover {
+    background-color: #ff1493; /* 호버 시 색상 변경 */
+}
+.schedule-header {
+    cursor: pointer; /* 마우스를 올렸을 때 손 모양으로 변경 */
+}
+#infoModalContent {
+    word-wrap: break-word; /* 긴 단어가 줄 바꿈되도록 설정 */
+    overflow-wrap: break-word; /* CSS2에 대한 대체 스타일 */
+    white-space: pre-wrap; /* 공백과 줄 바꿈 모두 유지 */
+
+}

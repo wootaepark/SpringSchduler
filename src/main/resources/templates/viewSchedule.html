@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일정 모두 보기</title>
+  <link rel="stylesheet" href="/css/view.css">
+</head>
+<body>
+
+<h1>일정 모두 보기</h1>
+
+<div id="scheduleContainer" class="schedule-container">
+  <!-- 일정 데이터가 여기로 동적으로 삽입될 예정 -->
+</div>
+
+<div id="loadingMessage" class="loading">일정을 불러오는 중...</div>
+<!-- 수정 모달 -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>일정 수정</h2>
+    <form id="editForm" method="post">
+      <label for="editUsername">작성자:</label>
+      <input type="text" id="editUsername" name="username" required>
+
+      <label for="editTitle">제목:</label>
+      <input type="text" id="editTitle" name="title" required>
+
+      <label for="editContent">내용:</label>
+      <textarea id="editContent" name="content" rows="4" required></textarea>
+
+      <label for="editPassword">비밀번호:</label>
+      <input type="password" id="editPassword" name="password" required>
+
+      <label for="editDate">수정 할 날짜:</label>
+      <input type="date" id="editDate" name="date" required> <!-- 수정된 부분: 날짜 입력 필드 추가 -->
+
+      <div class="form-buttons">
+        <button type="button" id="cancel">나가기</button>
+        <button type="submit">수정</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 삭제 비밀번호 모달 -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeDeleteModal()">&times;</span>
+    <h2>삭제 확인</h2>
+    <p>비밀번호를 입력하여 일정을 삭제</p>
+    <form id="deleteForm">
+      <label for="deletePassword">비밀번호:</label>
+      <input type="password" id="deletePassword" required>
+      <div class="form-buttons">
+        <button type="button" id="cancelDelete" onclick="closeDeleteModal()">취소</button>
+        <button type="submit">삭제</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="infoModal" style="display: none;" class="modal">
+  <div class="modal-content" style="max-width: 500px; width: 90%; margin: auto;">
+    <span id="infoModalClose" class="close">&times;</span>
+    <h2 id="infoModalTitle" style="background-color: lightblue; padding: 10px; border-radius: 5px;">제목</h2>
+    <div id="infoModalContent" style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal;"></div>
+    <div style="background-color: #c9d1e6; padding: 10px; margin-top: 10px; border-radius: 5px;">
+      <div id="infoModalUsername"></div>
+      <div id="infoModalScheduledDate"></div>
+      <div id="infoModalUpdatedAt"></div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<script src="/js/view.js"></script>
+
+<div class="button-container">
+  <a href="/" id="calendarButton">📅 달력보기</a>
+</div>
+
+
+
+</body>
+</html>

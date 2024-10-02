@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 @Getter
 public class ScheduleRequestDto {
-
     private String username;
     private String email;
     private String password;

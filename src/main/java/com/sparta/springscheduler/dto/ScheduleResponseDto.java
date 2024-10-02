@@ -16,18 +16,19 @@ public class ScheduleResponseDto {
     private LocalDate scheduledDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer user_id;
 
     // POST 로 입력 후 응답하기 위한 DTO
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
-        this.username = schedule.getUsername();
-        this.email = schedule.getEmail();
+        this.username = schedule.getUser().getUsername();
+        this.email = schedule.getUser().getEmail();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
         this.scheduledDate = schedule.getScheduledDate();
         this.createdAt = schedule.getCreatedAt();
         this.updatedAt = schedule.getUpdatedAt();
-
+        this.user_id = schedule.getUser().getId();
     }
 
 

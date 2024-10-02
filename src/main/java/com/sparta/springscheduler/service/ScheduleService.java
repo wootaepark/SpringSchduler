@@ -5,7 +5,9 @@ import com.sparta.springscheduler.dto.ScheduleRequestDto;
 import com.sparta.springscheduler.dto.ScheduleResponseDto;
 import com.sparta.springscheduler.dto.ScheduleUpdateRequestDto;
 import com.sparta.springscheduler.entity.Schedule;
+import com.sparta.springscheduler.entity.User;
 import com.sparta.springscheduler.repository.ScheduleRepository;
+import com.sparta.springscheduler.repository.UserRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDate;
@@ -16,13 +18,26 @@ public class ScheduleService {
 
     public ScheduleService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+
     }
 
 
     public ScheduleResponseDto createSchedule(ScheduleRequestDto requestDto) {
+        UserRepository userRepository = new UserRepository(jdbcTemplate);
+        User user = userRepository.findByEmail(requestDto.getEmail());
+
+        if (user == null) {
+            user = new User(requestDto);
+            userRepository.save(user);
+        }
 
         // RequestDto -> Entity
-        Schedule schedule = new Schedule(requestDto);
+        Schedule schedule = new Schedule(requestDto, user);
+        // 관계 매핑
+        user.addSchedule(schedule); // 유저가 있어야 일정이 존재하므로
+
+
+        // 스케줄 저장
         ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
 
         Schedule saveSchedule = scheduleRepository.save(schedule);
@@ -69,7 +84,6 @@ public class ScheduleService {
     }
 
 
-
     public Integer deleteSchedule(Integer id, ScheduleDeleteRequestDto requestDto) {
         ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
         Schedule schedule = scheduleRepository.findSchedule(id);
@@ -79,13 +93,12 @@ public class ScheduleService {
                 scheduleRepository.delete(id);
                 return id;
             }
-            return -1;
+            return -1; // 비밀번호 불일 치 시 (관련 로직은 프런트에서 처리)
         } else {
             throw new IllegalArgumentException("Schedule with id " + id + " not found");
         }
 
     }
-
 
 
 }

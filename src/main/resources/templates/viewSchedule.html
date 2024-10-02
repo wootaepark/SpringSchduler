@@ -10,11 +10,25 @@
 
 <h1>일정 모두 보기</h1>
 
+<!-- 필터 섹션 -->
+<div id="filterContainer" class="filter-container">
+  <h2>필터 적용 </h2>
+  <label for="filterUsername"> 작성자:</label>
+  <input type="text" id="filterUsername" placeholder="작성자 이름 입력">
+
+  <label for="filterDate">수정 날짜:</label>
+  <input type="date" id="filterDate">
+
+  <button id="applyFilters">적용</button>
+  <button id="clearFilters">초기화</button>
+</div>
+
 <div id="scheduleContainer" class="schedule-container">
   <!-- 일정 데이터가 여기로 동적으로 삽입될 예정 -->
 </div>
 
 <div id="loadingMessage" class="loading">일정을 불러오는 중...</div>
+
 <!-- 수정 모달 -->
 <div id="modal" class="modal">
   <div class="modal-content">
@@ -33,8 +47,8 @@
       <label for="editPassword">비밀번호:</label>
       <input type="password" id="editPassword" name="password" required>
 
-      <label for="editDate">수정 할 날짜:</label>
-      <input type="date" id="editDate" name="date" required> <!-- 수정된 부분: 날짜 입력 필드 추가 -->
+      <label for="editDate">수정할 날짜:</label>
+      <input type="date" id="editDate" name="date" required>
 
       <div class="form-buttons">
         <button type="button" id="cancel">나가기</button>
@@ -68,25 +82,19 @@
     <div id="infoModalContent" style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal;"></div>
     <div style="background-color: #c9d1e6; padding: 10px; margin-top: 10px; border-radius: 5px;">
       <div id="infoModalUsername"></div>
+      <div id="infoModalUserMail"></div>
       <div id="infoModalScheduledDate"></div>
+      <div id="infoModalCreatedAt"></div>
       <div id="infoModalUpdatedAt"></div>
     </div>
   </div>
 </div>
-
-
-
-
-
-
 
 <script src="/js/view.js"></script>
 
 <div class="button-container">
   <a href="/" id="calendarButton">📅 달력보기</a>
 </div>
-
-
 
 </body>
 </html>

@@ -1,9 +1,24 @@
 let selectedScheduleId = null; // 수정할 일정 ID
 
 // 일정 데이터를 불러오는 함수
-async function fetchSchedules() {
+async function fetchSchedules(date = null, username = null) {
     try {
-        const response = await fetch('/api/schedules'); // 백엔드에서 일정 데이터를 가져오는 API 엔드포인트
+        let url = '/api/schedules';
+
+        if (date && username) {
+            // 날짜와 작성자 모두
+            url += `?updateDate=${date}&username=${username}`;
+        }
+        else if(username){
+            // 작성자만
+            url+=`?username=${username}`;
+        }
+        else if(date){
+            //날짜만
+            url+=`?updateDate=${date}`;
+        }
+
+        const response = await fetch(url); // 백엔드에서 일정 데이터를 가져오는 API 엔드포인트
         const schedules = await response.json();
 
         // 일정 데이터를 화면에 표시
@@ -13,12 +28,37 @@ async function fetchSchedules() {
         document.getElementById('loadingMessage').innerText = '일정을 불러오지 못했습니다.';
     }
 }
+// 필터 적용 버튼 클릭 시 이벤트 처리
+document.getElementById('applyFilters').onclick = function() {
+    const username = document.getElementById('filterUsername').value; // 필터 ID 대신 username 사용
+    const date = document.getElementById('filterDate').value;
+    fetchSchedules(date || null, username || null); // 필터링된 일정 불러오기
+};
+
+// 필터 초기화 버튼 클릭 시 이벤트 처리
+document.getElementById('clearFilters').onclick = function() {
+    document.getElementById('filterUsername').value = ''; // 필터 초기화
+    document.getElementById('filterDate').value = '';
+    fetchSchedules(); // 필터 없이 모든 일정 불러오기
+};
+
 
 // 일정 데이터를 화면에 표시하는 함수
 function displaySchedules(schedules) {
     const container = document.getElementById('scheduleContainer');
     container.innerHTML = ''; // 기존 내용을 지움
     document.getElementById('loadingMessage').style.display = 'none'; // 로딩 메시지 숨기기
+
+
+    // 일정 데이터가 없을 경우 메시지 표시
+    if (schedules.length === 0) {
+        const noResultMessage = document.createElement('div');
+        noResultMessage.innerText = '결과가 없습니다.'; // 결과가 없다는 메시지
+        noResultMessage.style.textAlign = 'center';
+        noResultMessage.style.marginTop = '20px';
+        container.appendChild(noResultMessage);
+        return; // 함수 종료
+    }
 
     // 일정 데이터를 카드 형태로 삽입
     schedules.forEach(schedule => {
@@ -37,15 +77,18 @@ function displaySchedules(schedules) {
         }
 
         card.innerHTML = `
-                <div class="schedule-header" onclick="openInfoModal('${schedule.title}', '${escapeHtml(schedule.content)}', '${schedule.username}', '${schedule.scheduledDate}', '${schedule.updatedAt}')">
+                <div class="schedule-header" onclick="openInfoModal('${schedule.title}', '${escapeHtml(schedule.content)}', '${schedule.username}',
+                 '${schedule.email}','${schedule.scheduledDate}', '${schedule.createdAt}','${schedule.updatedAt}')">
                     ${schedule.title}
                 </div>
                 <div class="schedule-footer">
                     <div><b>작성자: </b>${schedule.username}</div>
                     <div style="color: red;"><b>예정 날짜: </b>${new Date(schedule.scheduledDate).toLocaleDateString()}</div>
-                    <div><b>최종 수정일: </b>${new Date(schedule.updatedAt).toLocaleDateString()}</div>
+                    <div><b>이메일 : </b>${schedule.email}</div>
+                     <div><b>작성일: </b>${new Date(schedule.createdAt).toLocaleString()}</div>
+                    <div><b>최종 수정일: </b>${new Date(schedule.updatedAt).toLocaleString()}</div>
                 </div>
-                <button onclick="openEditModal(${schedule.id}, '${schedule.username}', '${schedule.title}', '${schedule.content}', '${schedule.scheduledDate}')">수정</button>
+                <button onclick="openEditModal(${schedule.id}, '${schedule.username}', '${schedule.title}', '${escapeHtml(schedule.content)}', '${schedule.scheduledDate}')">수정</button>
                 <button onclick="deleteSchedule(${schedule.id})">삭제</button>
             `;
 
@@ -53,16 +96,17 @@ function displaySchedules(schedules) {
     });
 }
 
-function openInfoModal(title, content, username, scheduledDate, updatedAt) {
+function openInfoModal(title, content, username, email ,scheduledDate, createdAt,updatedAt) {
     document.getElementById('infoModalTitle').innerText = title;
 
     // 줄 바꿈(\n)을 <br>로 변환해서 HTML 형식으로 출력
     document.getElementById('infoModalContent').innerHTML = content.replace(/\n/g, '<br>');
 
     document.getElementById('infoModalUsername').innerText = `작성자: ${username}`;
+    document.getElementById('infoModalUserMail').innerText = `이메일: ${email}`;
     document.getElementById('infoModalScheduledDate').innerText = `일정 날짜: ${new Date(scheduledDate).toLocaleDateString()}`;
-    document.getElementById('infoModalUpdatedAt').innerText = `최종 수정일: ${new Date(updatedAt).toLocaleDateString()}`;
-
+    document.getElementById('infoModalCreatedAt').innerText = `작성일: ${new Date(createdAt).toLocaleString()}`;
+    document.getElementById('infoModalUpdatedAt').innerText = `최종 수정일: ${new Date(updatedAt).toLocaleString()}`;
     document.getElementById('infoModal').style.display = 'flex'; // 모달 표시
 }
 
@@ -199,3 +243,24 @@ window.onload = function () {
 document.querySelector('.close').onclick = function () {
     document.getElementById('modal').style.display = 'none';
 };
+
+
+
+// 일정 개수를 화면에 표시하는 함수
+function displayScheduleCount(schedules) {
+    const countMap = {}; // 날짜별 일정 개수를 저장할 객체
+
+    // 일정 데이터의 날짜별 개수를 계산
+    schedules.forEach(schedule => {
+        const date = new Date(schedule.scheduledDate).toLocaleDateString(); // 날짜 형식 변경
+        countMap[date] = (countMap[date] || 0) + 1; // 날짜에 대한 개수 증가
+    });
+
+    // 일정 개수를 표시할 문자열 생성
+    let countText = '일정 개수: ';
+    for (const date in countMap) {
+        countText += `${date}: ${countMap[date]}개; `;
+    }
+
+    document.getElementById('scheduleCount').innerText = countText; // 개수 표시
+}

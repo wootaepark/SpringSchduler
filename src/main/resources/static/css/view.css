@@ -3,6 +3,9 @@ body {
     background-color: #f4f4f4;
     padding: 20px;
     margin: 0;
+    display: flex; /* flexbox 사용 */
+    flex-direction: column; /* 세로 방향으로 배치 */
+    align-items: center; /* 수평 가운데 정렬 */
 }
 
 h1 {
@@ -35,11 +38,7 @@ h1 {
     font-size: 1.5rem;
     margin-bottom: 10px;
     color: #007bff;
-}
-
-.schedule-body {
-    font-size: 1rem;
-    margin-bottom: 10px;
+    cursor: pointer;
 }
 
 .schedule-footer {
@@ -61,7 +60,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* 모달 스타일 */
+/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -97,7 +96,8 @@ form label {
     margin-top: 10px;
 }
 
-form input, form textarea {
+form input,
+form textarea {
     margin-bottom: 10px;
     padding: 8px;
     border-radius: 5px;
@@ -116,35 +116,107 @@ form input, form textarea {
 .form-buttons button:hover {
     background-color: #344a91;
 }
+
 #calendarButton {
-    display: inline-block; /* 버튼처럼 보이게 */
-    background-color: #ff69b4; /* 분홍색 배경 */
-    color: white; /* 글씨 색상 */
-    padding: 15px 30px; /* 패딩으로 크기 조절 */
-    border: none; /* 테두리 제거 */
-    border-radius: 5px; /* 모서리 둥글게 */
-    font-size: 1.5rem; /* 글자 크기 조절 */
-    text-align: center; /* 텍스트 가운데 정렬 */
-    text-decoration: none; /* 밑줄 제거 */
-    margin: 20px 0; /* 위아래 여백 */
+    display: inline-block;
+    background-color: #ff69b4;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    margin: 20px 0;
 }
 
 .button-container {
     display: flex;
-    justify-content: center; /* 수평 가운데 정렬 */
-    margin-top: 20px; /* 버튼과 위 요소 간의 여백 */
+    justify-content: center;
+    margin-top: 20px;
 }
-
 
 #calendarButton:hover {
-    background-color: #ff1493; /* 호버 시 색상 변경 */
+    background-color: #ff1493;
 }
-.schedule-header {
-    cursor: pointer; /* 마우스를 올렸을 때 손 모양으로 변경 */
-}
+
 #infoModalContent {
-    word-wrap: break-word; /* 긴 단어가 줄 바꿈되도록 설정 */
-    overflow-wrap: break-word; /* CSS2에 대한 대체 스타일 */
-    white-space: pre-wrap; /* 공백과 줄 바꿈 모두 유지 */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.filter-container {
+    background-color: #f9f9f9;
+    padding: 10px; /* 세로 여백을 줄였습니다. */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 800px; /* 필터 컨테이너의 너비를 길게 설정 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    margin-bottom: 20px; /* 아래 여백 */
+    display: flex; /* Flexbox 사용 */
+    flex-wrap: nowrap; /* 줄 바꿈을 방지하여 한 줄로 유지 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+.filter-item {
+     margin-right: 20px; /* 필터 항목 사이의 간격 */
+ }
+
+.filter-container label {
+    flex: 1; /* Equal width for labels */
+    margin-bottom: 5px; /* Smaller bottom margin */
+    margin-right: 5px; /* 레이블과 입력 필드 간의 간격을 설정 */
+    margin-left : 10px;
+}
+.filter-container input[type="text"]{
+    width: 150px; /* 입력 필드 너비를 좁혀줍니다 */
+    margin-right: 20px; /* 입력 필드와 버튼 간의 간격을 설정 */
+    margin-left:-20px;
+}
+.filter-container input[type="date"] {
+    width: 150px; /* 입력 필드 너비를 좁혀줍니다 */
+    margin-right: 20px; /* 입력 필드와 버튼 간의 간격을 설정 */
+    margin-left:-5px;
+}
+
+.filter-container input {
+    flex: 2; /* Wider input fields */
+    padding: 6px; /* Reduced padding */
+    margin-bottom: 8px; /* Reduced margin */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filter-container button {
+    padding: 8px 12px; /* Adjusted padding */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px; /* Button margin */
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.filter-container button:hover {
+    background-color: #0056b3;
+}
+
+.schedule-container {
+    width: 100%;
+    max-width: 800px; /* Maximum width */
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+#noResultMessage {
+    text-align: center; /* Center alignment */
+    margin-top: 20px; /* Top margin */
+    font-size: 16px; /* Font size */
 
 }

@@ -1,46 +1,91 @@
 let selectedScheduleId = null; // 수정할 일정 ID
-
+let currentPage = 0; // 현재 페이지 번호
 // 일정 데이터를 불러오는 함수
-async function fetchSchedules(date = null, username = null) {
+async function fetchSchedules(date = null, username = null, size = 10, page = 0) {
     try {
-        let url = '/api/schedules';
+        let url = `/api/schedules?size=${size}&page=${page}`; // 기본 URL 설정
 
         if (date && username) {
             // 날짜와 작성자 모두
-            url += `?updateDate=${date}&username=${username}`;
-        }
-        else if(username){
+            url += `&updateDate=${date}&username=${username}`;
+        } else if (username) {
             // 작성자만
-            url+=`?username=${username}`;
-        }
-        else if(date){
-            //날짜만
-            url+=`?updateDate=${date}`;
+            url += `&username=${username}`;
+        } else if (date) {
+            // 날짜만
+            url += `&updateDate=${date}`;
         }
 
         const response = await fetch(url); // 백엔드에서 일정 데이터를 가져오는 API 엔드포인트
         const schedules = await response.json();
 
+        // 일정 데이터가 없을 경우 현재 페이지를 변경하지 않음
+        if (schedules.length === 0 && page > 0) {
+            currentPage--; // 페이지를 감소시켜 이전 페이지로 되돌리기
+            fetchSchedules(date, username, size, currentPage); // 이전 페이지 데이터를 요청
+            return; // 이후 코드를 실행하지 않음
+        }
+
         // 일정 데이터를 화면에 표시
         displaySchedules(schedules);
+        updatePageInfo(page); // 페이지 정보 업데이트
     } catch (error) {
         console.error('Error fetching schedules:', error);
         document.getElementById('loadingMessage').innerText = '일정을 불러오지 못했습니다.';
     }
 }
+
+// 페이지 정보 업데이트 함수
+function updatePageInfo(page) {
+    document.getElementById('pageInfo').innerText = `페이지 ${page + 1}`;
+}
+
+// 이전 페이지 버튼 클릭 시 이벤트 처리
+document.getElementById('prevPage').onclick = function() {
+    if (currentPage > 0) {
+        currentPage--;
+        const size = document.getElementById('pageSize').value; // 현재 페이지당 개수
+        const username = document.getElementById('filterUsername').value; // 필터에서 사용자명 가져오기
+        const date = document.getElementById('filterDate').value; // 필터에서 날짜 가져오기
+        fetchSchedules(date || null, username || null, size, currentPage); // 이전 페이지 데이터 요청
+    }
+};
+
+// 다음 페이지 버튼 클릭 시 이벤트 처리
+document.getElementById('nextPage').onclick = function() {
+    const size = document.getElementById('pageSize').value; // 현재 페이지당 개수
+    currentPage++;
+    const username = document.getElementById('filterUsername').value; // 필터에서 사용자명 가져오기
+    const date = document.getElementById('filterDate').value; // 필터에서 날짜 가져오기
+    fetchSchedules(date || null, username || null, size, currentPage); // 다음 페이지 데이터 요청
+};
+
+// 페이지당 개수 변경 이벤트 처리
+document.getElementById('pageSize').onchange = function() {
+    const size = this.value; // 선택한 페이지당 개수
+    const username = document.getElementById('filterUsername').value; // 필터에서 사용자명 가져오기
+    const date = document.getElementById('filterDate').value; // 필터에서 날짜 가져오기
+    fetchSchedules(date || null, username || null, size, currentPage); // 페이지 크기와 현재 페이지로 요청
+};
+
 // 필터 적용 버튼 클릭 시 이벤트 처리
 document.getElementById('applyFilters').onclick = function() {
     const username = document.getElementById('filterUsername').value; // 필터 ID 대신 username 사용
     const date = document.getElementById('filterDate').value;
-    fetchSchedules(date || null, username || null); // 필터링된 일정 불러오기
+    const size = document.getElementById('pageSize').value; // 현재 페이지당 개수
+    currentPage = 0; // 필터를 적용할 때 현재 페이지를 0으로 리셋
+    fetchSchedules(date || null, username || null, size, currentPage); // 필터링된 일정 불러오기
 };
 
 // 필터 초기화 버튼 클릭 시 이벤트 처리
 document.getElementById('clearFilters').onclick = function() {
     document.getElementById('filterUsername').value = ''; // 필터 초기화
     document.getElementById('filterDate').value = '';
-    fetchSchedules(); // 필터 없이 모든 일정 불러오기
+    const size = document.getElementById('pageSize').value; // 현재 페이지당 개수
+    currentPage = 0; // 필터를 적용할 때 현재 페이지를 0으로 리셋
+    fetchSchedules(null, null, size, currentPage); // 필터 없이 모든 일정 불러오기
 };
+
 
 
 // 일정 데이터를 화면에 표시하는 함수
@@ -119,10 +164,6 @@ document.getElementById('infoModalClose').onclick = function () {
     document.getElementById('infoModal').style.display = 'none';
 };
 
-// 페이지가 로드될 때 일정을 불러옴
-window.onload = function () {
-    fetchSchedules();
-};
 
 // 모달창 닫기 버튼(X) 처리
 document.querySelector('.close').onclick = function () {
@@ -236,7 +277,8 @@ async function deleteSchedule(id) {
 
 // 페이지가 로드될 때 일정을 불러옴
 window.onload = function () {
-    fetchSchedules();
+    const size = document.getElementById('pageSize').value; // 기본 페이지당 개수
+    fetchSchedules(null, null, size, currentPage);
 };
 
 // 모달창 닫기 버튼(X) 처리

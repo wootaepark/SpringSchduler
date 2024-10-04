@@ -1,9 +1,6 @@
 package com.sparta.springscheduler.service;
 
-import com.sparta.springscheduler.dto.ScheduleDeleteRequestDto;
-import com.sparta.springscheduler.dto.ScheduleRequestDto;
-import com.sparta.springscheduler.dto.ScheduleResponseDto;
-import com.sparta.springscheduler.dto.ScheduleUpdateRequestDto;
+import com.sparta.springscheduler.dto.*;
 import com.sparta.springscheduler.entity.Schedule;
 import com.sparta.springscheduler.entity.User;
 import com.sparta.springscheduler.repository.ScheduleRepository;
@@ -11,6 +8,7 @@ import com.sparta.springscheduler.repository.UserRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleService {
@@ -57,13 +55,24 @@ public class ScheduleService {
     }
 
 
-    public List<ScheduleResponseDto> getAllSchedules(LocalDate updateDate, String username) {
+    public List<ScheduleResponseDto> getAllSchedules(LocalDate updateDate, String username, int page, int size) {
+        // 페이징 객체 생성
+        Paging paging = new Paging(page, size);
 
+        // ScheduleRepository를 사용하여 조건과 페이징을 기반으로 일정 목록 조회
         ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
-        return scheduleRepository.findAll(updateDate, username);
+        List<ScheduleResponseDto> schedules = scheduleRepository.findAll(updateDate, username, paging);
 
+        // 요청한 페이지가 범위를 넘어선 경우 빈 배열 반환
+        if (schedules.isEmpty() && page > 0) {
+            return new ArrayList<>(); // 빈 배열 반환
+        }
 
+        return schedules; // 조회한 일정 목록 반환
     }
+
+
+
 
     public Integer updateSchedule(Integer id, ScheduleUpdateRequestDto requestDto) {
         ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);

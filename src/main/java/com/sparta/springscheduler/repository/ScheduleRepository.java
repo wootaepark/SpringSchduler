@@ -1,5 +1,6 @@
 package com.sparta.springscheduler.repository;
 
+import com.sparta.springscheduler.dto.Paging;
 import com.sparta.springscheduler.dto.ScheduleResponseDto;
 import com.sparta.springscheduler.dto.ScheduleUpdateRequestDto;
 import com.sparta.springscheduler.entity.Schedule;
@@ -64,18 +65,18 @@ public class ScheduleRepository {
     }
 
 
-    public List<ScheduleResponseDto> findAll(LocalDate updateDate, String username) {
+    public List<ScheduleResponseDto> findAll(LocalDate updateDate, String username, Paging paging) {
+        List<Object> params = new ArrayList<>();
 
         // 기본 SQL 쿼리 (JOIN 사용)
         String sql = "SELECT s.*, u.username, u.email FROM schedule s " +
                 "LEFT JOIN user u ON s.user_id = u.id"; // user_id로 schedule과 user 테이블을 조인
-        List<Object> params = new ArrayList<>();
 
         // 조건 추가
         boolean hasWhereClause = false;
 
         if (username != null && !username.isEmpty()) {
-            sql += " WHERE username = ?";
+            sql += " WHERE u.username = ?";
             params.add(username);
             hasWhereClause = true;
         }
@@ -85,11 +86,15 @@ public class ScheduleRepository {
             params.add(updateDate);
         }
 
-        sql += " ORDER BY updatedAt DESC";
+        sql += " ORDER BY s.updatedAt DESC ";
+
+        // 페이징 정보 추가
+        sql += "LIMIT ? OFFSET ?";
+        params.add(paging.getPageSize());
+        params.add(paging.getPageNumber() * paging.getPageSize());
 
         // PreparedStatement에 인자를 바인딩하면서 쿼리 실행
         return jdbcTemplate.query(sql, params.toArray(), new RowMapper<ScheduleResponseDto>() {
-
             @Override
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer id = rs.getInt("id");
@@ -100,10 +105,11 @@ public class ScheduleRepository {
                 LocalDate scheduledDate = rs.getDate("scheduledDate").toLocalDate();
                 LocalDateTime createdAt = rs.getTimestamp("createdAt").toLocalDateTime();
                 LocalDateTime updatedAt = rs.getTimestamp("updatedAt").toLocalDateTime();
-                return new ScheduleResponseDto(id, username, email, title, content,scheduledDate, createdAt, updatedAt);
+                return new ScheduleResponseDto(id, username, email, title, content, scheduledDate, createdAt, updatedAt);
             }
         });
     }
+
 
 
     public void update(Integer id, ScheduleUpdateRequestDto requestDto) {

@@ -16,16 +16,19 @@ import java.util.List;
 @RequestMapping("/api")
 public class ScheduleController {
 
-    private final JdbcTemplate jdbcTemplate;
+
+    private final ScheduleService scheduleService;
+
 
     public ScheduleController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.scheduleService = new ScheduleService(jdbcTemplate);
     }
+
+
 
     // 일정 등록 api
     @PostMapping("/schedules")
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
-        ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
         return scheduleService.createSchedule(requestDto);
     }
 
@@ -33,25 +36,27 @@ public class ScheduleController {
     // id 값을 파라미터로 받아서 해당하는 일정 단건의 정보 조회하기
     @GetMapping("/schedules/{id}")
     public ScheduleResponseDto getSchedule(@PathVariable Integer id) {
-        ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
         return scheduleService.getSchedule(id);
 
     }
 
 
-    // 조건에 따른 일정 목록 조회 api (조건이 없을 수도 있음)
+    // 조건에 따른 일정 목록 조회 api (조건이 없을 수도 있음) + 페이징 기능 추가
     @GetMapping("/schedules")
-    public List<ScheduleResponseDto> getAllSchedules(@RequestParam(required = false) LocalDate updateDate, @RequestParam(required = false) String username) {
-        ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
-        return scheduleService.getAllSchedules(updateDate, username);
+    public List<ScheduleResponseDto> getAllSchedules(
+            @RequestParam(required = false) LocalDate updateDate, @RequestParam(required = false) String username,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return scheduleService.getAllSchedules(updateDate, username, page, size);
 
     }
+
+
+
 
 
     // 선택 일정 수정 (할일, 작성자명 만 수정 가능, 요청 시 비밀번호 함께 전달)
     @PutMapping("/schedules/{id}")
     public Integer updateSchedule(@PathVariable Integer id, @RequestBody ScheduleUpdateRequestDto requestDto) {
-        ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
         return scheduleService.updateSchedule(id, requestDto);
     }
 
@@ -59,7 +64,6 @@ public class ScheduleController {
     // 선택한 일정 삭제 (비밀번호 함께 전달)
     @DeleteMapping("/schedules/{id}")
     public Integer deleteSchedule(@PathVariable Integer id, @RequestBody ScheduleDeleteRequestDto requestDto) {
-        ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
         return scheduleService.deleteSchedule(id,requestDto);
     }
 
